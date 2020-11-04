@@ -1,0 +1,93 @@
+class TicTacToe
+
+    def initialize
+        @board = [" ", " ", " ", " ", " ", " ", " ", " ", " "]
+    end
+
+    WIN_COMBINATIONS = [
+        [0,1,2],
+        [3,4,5],
+        [6,7,8],
+        [0,3,6],
+        [1,4,7],
+        [2,5,8],
+        [0,4,8],
+        [6,4,2]
+    ]
+
+    def display_board
+        puts " #{@board[0]} | #{@board[1]} | #{@board[2]} "
+        puts "-----------"
+        puts " #{@board[3]} | #{@board[4]} | #{@board[5]} "
+        puts "-----------"
+        puts " #{@board[6]} | #{@board[7]} | #{@board[8]} "
+    end
+
+    def input_to_index(input)
+        input = input.to_i - 1
+    end
+
+    def move(placement, token = "X")
+        @board[placement] = token
+    end
+
+    def position_taken?(placement)
+        @board[placement] != " "
+    end
+
+    def valid_move?(placement)
+        !position_taken?(placement) && placement.between?(0,8)
+    end
+
+    def turn_count
+        @board.count {|placement| placement != " "}
+    end
+
+    def current_player
+        turn_count.even? ? "X" : "O"
+    end
+
+    def turn
+        puts "Enter position between 1-9:"
+        user_input = gets.strip
+        placement = input_to_index(user_input)
+        if valid_move?(placement)
+            token = current_player
+            move(placement, token)
+        else
+            turn
+        end
+        display_board
+    end
+
+    def won?
+        WIN_COMBINATIONS.any? do |wins|
+            if position_taken?(wins[0]) && @board[wins[0]] == @board[wins[1]] && @board[wins[1]] == @board[wins[2]]
+            return wins
+            end
+        end
+    end
+
+    def full?
+        @board.all? {|placement| placement != " "}
+    end
+
+    def draw?
+        full? && !won?
+    end
+
+    def over?
+        won? || draw?
+    end
+
+    def winner
+        if wins = won?
+            @board[wins[0]]
+        end
+    end
+    
+    def play
+        turn until over?
+        puts winner ? "Congratulations #{winner}!" : "Cat's Game!"
+    end
+end
